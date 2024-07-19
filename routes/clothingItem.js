@@ -5,8 +5,8 @@ const {
   deleteClothingItem,
 } = require("../controllers/clothingItem");
 
-router.get("/items", getClothingItems);
-router.post("/items", createClothingItem);
-router.delete("/items/:itemId", deleteClothingItem);
+router.get("/", getClothingItems);
+router.post("/", createClothingItem);
+router.delete("/:itemId", deleteClothingItem);
 
 module.exports = router;

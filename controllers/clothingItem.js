@@ -15,7 +15,7 @@ module.exports.createClothingItem = (req, res) => {
 };
 
 module.exports.deleteClothingItem = (req, res) => {
-  ClothingItem.findByIdAndRemove(req.params.id)
+  ClothingItem.findByIdAndRemove(req.params.itemId)
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
