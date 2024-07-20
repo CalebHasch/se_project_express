@@ -10,6 +10,12 @@ mongoose
   .then(() => console.log("connected to db"))
   .catch(console.error);
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: "669a6bb178815f80aa9c2e31",
+  };
+  next();
+});
 app.use(express.json());
 app.use("/users", require("./routes/user"));
 app.use("/items", require("./routes/clothingItem"));
