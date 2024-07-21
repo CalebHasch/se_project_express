@@ -37,7 +37,8 @@ module.exports.deleteClothingItem = (req, res) => {
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
+
+      if (err.name === "ValidationError" || err.name === "CastError") {
         res.status(invalidData).send({ message: err.message });
       } else if (err.name === "DocumentNotFoundError") {
         res.status(notFound).send({ message: err.message });
@@ -57,7 +58,8 @@ module.exports.likeClothingItem = (req, res) => {
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
+
+      if (err.name === "ValidationError" || err.name === "CastError") {
         res.status(invalidData).send({ message: err.message });
       } else if (err.name === "DocumentNotFoundError") {
         res.status(notFound).send({ message: err.message });
@@ -77,7 +79,8 @@ module.exports.dislikeClothingItem = (req, res) => {
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
+
+      if (err.name === "ValidationError" || err.name === "CastError") {
         res.status(invalidData).send({ message: err.message });
       } else if (err.name === "DocumentNotFoundError") {
         res.status(notFound).send({ message: err.message });

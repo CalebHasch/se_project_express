@@ -22,7 +22,8 @@ module.exports.getUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
+
+      if (err.name === "ValidationError" || err.name === "CastError") {
         res.status(invalidData).send({ message: err.message });
       } else if (err.name === "DocumentNotFoundError") {
         res.status(notFound).send({ message: err.message });
