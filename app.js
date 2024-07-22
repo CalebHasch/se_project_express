@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const { notFound } = require("./utils/error");
 
 const { PORT = 3001 } = process.env;
 
@@ -19,6 +20,10 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use("/users", require("./routes/user"));
 app.use("/items", require("./routes/clothingItem"));
+
+app.use((req, res) => {
+  res.status(notFound.status).send({ message: notFound.message });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

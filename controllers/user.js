@@ -6,12 +6,10 @@ module.exports.getUsers = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
-        res.status(invalidData).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound).send({ message: err.message });
+      if (err.name === "DocumentNotFoundError") {
+        res.status(notFound.status).send({ message: notFound.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
@@ -24,11 +22,11 @@ module.exports.getUser = (req, res) => {
       console.error(err);
 
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData).send({ message: err.message });
+        res.status(invalidData.status).send({ message: invalidData.message });
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound).send({ message: err.message });
+        res.status(notFound.status).send({ message: notFound.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
@@ -41,9 +39,9 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        res.status(invalidData).send({ message: err.message });
+        res.status(invalidData.status).send({ message: invalidData.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };

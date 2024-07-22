@@ -6,12 +6,10 @@ module.exports.getClothingItems = (req, res) => {
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
-        res.status(invalidData).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound).send({ message: err.message });
+      if (err.name === "DocumentNotFoundError") {
+        res.status(notFound.status).send({ message: notFound.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
@@ -24,9 +22,9 @@ module.exports.createClothingItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        res.status(invalidData).send({ message: err.message });
+        res.status(invalidData.status).send({ message: invalidData.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
@@ -39,11 +37,11 @@ module.exports.deleteClothingItem = (req, res) => {
       console.error(err);
 
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData).send({ message: err.message });
+        res.status(invalidData.status).send({ message: invalidData.message });
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound).send({ message: err.message });
+        res.status(notFound.status).send({ message: notFound.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
@@ -60,11 +58,11 @@ module.exports.likeClothingItem = (req, res) => {
       console.error(err);
 
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData).send({ message: err.message });
+        res.status(invalidData.status).send({ message: invalidData.message });
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound).send({ message: err.message });
+        res.status(notFound.status).send({ message: notFound.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
@@ -81,11 +79,11 @@ module.exports.dislikeClothingItem = (req, res) => {
       console.error(err);
 
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData).send({ message: err.message });
+        res.status(invalidData.status).send({ message: invalidData.message });
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound).send({ message: err.message });
+        res.status(notFound.status).send({ message: notFound.message });
       } else {
-        res.status(defaultError).send({ message: err.message });
+        res.status(defaultError.status).send({ message: defaultError.message });
       }
     });
 };
