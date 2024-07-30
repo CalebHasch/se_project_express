@@ -1,7 +1,14 @@
-const bycrypt = require("bycryptjs");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
-const { invalidData, notFound, defaultError } = require("../utils/error");
+const {
+  invalidData,
+  invalidLogin,
+  notFound,
+  defaultError,
+} = require("../utils/error");
+const { JWT_SECRET } = require("../utils/config");
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -35,8 +42,8 @@ module.exports.getUser = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-  bycrypt.hash(password, 10).then((hash) => {
-    User.create({ name, avatar, email, hash })
+  bcrypt.hash(password, 10).then((hash) => {
+    User.create({ name, avatar, email, password: hash })
       .then((user) => res.send({ data: user }))
       .catch((err) => {
         console.error(err);
@@ -49,4 +56,21 @@ module.exports.createUser = (req, res) => {
         }
       });
   });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      console.log("success login", user.name);
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(invalidLogin.status).send({ message: invalidLogin.message });
+    });
 };
