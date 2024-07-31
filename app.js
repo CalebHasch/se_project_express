@@ -6,6 +6,8 @@ const { PORT = 3001 } = process.env;
 
 const app = express();
 
+const auth = require("./middlewares/auth");
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => console.log("connected to db"))
@@ -18,6 +20,8 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
+app.use("/users/private", auth);
+app.use("/items/private", auth);
 app.use("/users", require("./routes/user"));
 app.use("/items", require("./routes/clothingItem"));
 
