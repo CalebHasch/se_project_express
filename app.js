@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const { notFound } = require("./utils/error");
 
 const { PORT = 3001 } = process.env;
@@ -13,13 +14,9 @@ mongoose
   .then(() => console.log("connected to db"))
   .catch(console.error);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "669a6bb178815f80aa9c2e31",
-  };
-  next();
-});
+app.use(cors());
 app.use(express.json());
+
 app.use("/users/private", auth);
 app.use("/items/private", auth);
 app.use("/users", require("./routes/user"));

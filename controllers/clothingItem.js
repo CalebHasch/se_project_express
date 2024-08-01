@@ -1,5 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
-const { invalidData, notFound, defaultError } = require("../utils/error");
+const {
+  invalidData,
+  notAuthorized,
+  notFound,
+  defaultError,
+} = require("../utils/error");
 
 module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
@@ -30,9 +35,18 @@ module.exports.createClothingItem = (req, res) => {
 };
 
 module.exports.deleteClothingItem = (req, res) => {
-  ClothingItem.findByIdAndRemove(req.params.itemId)
+  ClothingItem.findById(req.params.itemId)
     .orFail()
-    .then((clothingItems) => res.send({ data: clothingItems }))
+    .then((item) => {
+      if (!item.owner.equals(req.user._id)) {
+        res
+          .status(notAuthorized.status)
+          .send({ message: notAuthorized.message });
+      } else {
+        item.delete();
+        res.send({ data: item });
+      }
+    })
     .catch((err) => {
       console.error(err);
 
