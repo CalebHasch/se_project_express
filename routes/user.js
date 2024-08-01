@@ -6,9 +6,11 @@ const {
   updateUser,
 } = require("../controllers/user");
 
+const auth = require("../middlewares/auth");
+
 router.post("/signin", login);
 router.post("/signup", createUser);
-router.get("/private/me", getCurrentUser);
-router.post("/private/me", updateUser);
+router.get("/me", auth, getCurrentUser);
+router.post("/me", auth, updateUser);
 
 module.exports = router;
