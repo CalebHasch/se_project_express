@@ -13,28 +13,34 @@ const { JWT_SECRET } = require("../utils/config");
 
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-  bcrypt.hash(password, 10).then((hash) => {
-    User.create({ name, avatar, email, password: hash })
-      .then((user) => {
-        console.log(user);
-        res.send({ name: user.name, avatar: user.avatar, email: user.email });
-      })
-      .catch((err) => {
-        console.error(err);
-        if (err.name === "ValidationError") {
-          res.status(invalidData.status).send({ message: invalidData.message });
-        } else if (err.name === "MongoServerError") {
-          res
-            .status(mongoValidation.status)
-            .send({ message: mongoValidation.message });
-        } else {
-          console.log(err.name);
-          res
-            .status(defaultError.status)
-            .send({ message: defaultError.message });
-        }
-      });
-  });
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.create({ name, avatar, email, password: hash })
+        .then((user) => {
+          res.send({ name: user.name, avatar: user.avatar, email: user.email });
+        })
+        .catch((err) => {
+          console.error(err);
+          if (err.name === "ValidationError") {
+            res
+              .status(invalidData.status)
+              .send({ message: invalidData.message });
+          } else if (err.name === "MongoServerError") {
+            res
+              .status(mongoValidation.status)
+              .send({ message: mongoValidation.message });
+          } else {
+            res
+              .status(defaultError.status)
+              .send({ message: defaultError.message });
+          }
+        });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(defaultError.status).send({ message: defaultError.message });
+    });
 };
 
 module.exports.login = (req, res) => {

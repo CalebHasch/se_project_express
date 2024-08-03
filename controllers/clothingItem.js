@@ -11,11 +11,7 @@ module.exports.getClothingItems = (req, res) => {
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        res.status(notFound.status).send({ message: notFound.message });
-      } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
-      }
+      res.status(defaultError.status).send({ message: defaultError.message });
     });
 };
 
@@ -43,8 +39,7 @@ module.exports.deleteClothingItem = (req, res) => {
           .status(notAuthorized.status)
           .send({ message: notAuthorized.message });
       } else {
-        item.delete();
-        res.send({ data: item });
+        item.delete().then(() => res.send({ data: item }));
       }
     })
     .catch((err) => {
