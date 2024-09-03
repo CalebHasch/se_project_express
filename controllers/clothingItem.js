@@ -1,61 +1,52 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  invalidData,
-  notAuthorized,
-  notFound,
-  defaultError,
-} = require("../utils/error");
+const NotFoundError = require("../utils/Errors/NotFoundError");
+const InvalidDataError = require("../utils/Errors/InvalidDataError");
+const NotAuthorizedError = require("../utils/Errors/NotAuthorizedError");
 
-module.exports.getClothingItems = (req, res) => {
+module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
-      console.error(err);
-      res.status(defaultError.status).send({ message: defaultError.message });
+      next(err);
     });
 };
 
-module.exports.createClothingItem = (req, res) => {
+module.exports.createClothingItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((clothingItem) => res.send({ data: clothingItem }))
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
+        next(err);
       }
     });
 };
 
-module.exports.deleteClothingItem = (req, res) => {
+module.exports.deleteClothingItem = (req, res, next) => {
   ClothingItem.findById(req.params.itemId)
     .orFail()
     .then((item) => {
       if (!item.owner.equals(req.user._id)) {
-        res
-          .status(notAuthorized.status)
-          .send({ message: notAuthorized.message });
+        throw new NotAuthorizedError();
       } else {
         item.delete().then(() => res.send({ data: item }));
       }
     })
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound.status).send({ message: notFound.message });
+        next(new NotFoundError());
       } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
+        next(err);
       }
     });
 };
 
-module.exports.likeClothingItem = (req, res) => {
+module.exports.likeClothingItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -64,19 +55,17 @@ module.exports.likeClothingItem = (req, res) => {
     .orFail()
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound.status).send({ message: notFound.message });
+        next(new NotFoundError());
       } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
+        next(err);
       }
     });
 };
 
-module.exports.dislikeClothingItem = (req, res) => {
+module.exports.dislikeClothingItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -85,14 +74,12 @@ module.exports.dislikeClothingItem = (req, res) => {
     .orFail()
     .then((clothingItems) => res.send({ data: clothingItems }))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound.status).send({ message: notFound.message });
+        next(new NotFoundError());
       } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
+        next(err);
       }
     });
 };

@@ -2,16 +2,13 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
-const {
-  invalidData,
-  invalidLogin,
-  notFound,
-  mongoValidation,
-  defaultError,
-} = require("../utils/error");
 const { JWT_SECRET } = require("../utils/config");
+const NotFoundError = require("../utils/Errors/NotFoundError");
+const InvalidDataError = require("../utils/Errors/InvalidDataError");
+const InvalidLoginError = require("../utils/Errors/InvalidLoginError");
+const MongoValidationError = require("../utils/Errors/MongoValidationError");
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
@@ -21,29 +18,21 @@ module.exports.createUser = (req, res) => {
           res.send({ name: user.name, avatar: user.avatar, email: user.email });
         })
         .catch((err) => {
-          console.error(err);
           if (err.name === "ValidationError") {
-            res
-              .status(invalidData.status)
-              .send({ message: invalidData.message });
+            next(new InvalidDataError());
           } else if (err.name === "MongoServerError") {
-            res
-              .status(mongoValidation.status)
-              .send({ message: mongoValidation.message });
+            next(new MongoValidationError());
           } else {
-            res
-              .status(defaultError.status)
-              .send({ message: defaultError.message });
+            next(err);
           }
         });
     })
     .catch((err) => {
-      console.error(err);
-      res.status(defaultError.status).send({ message: defaultError.message });
+      next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -54,33 +43,30 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      console.error(err);
       if (err.message === "No password or email") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else {
-        res.status(invalidLogin.status).send({ message: invalidLogin.message });
+        next(new InvalidLoginError());
       }
     });
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound.status).send({ message: notFound.message });
+        next(new NotFoundError("sorry"));
       } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
+        next(err);
       }
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -90,14 +76,12 @@ module.exports.updateUser = (req, res) => {
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError" || err.name === "CastError") {
-        res.status(invalidData.status).send({ message: invalidData.message });
+        next(new InvalidDataError());
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(notFound.status).send({ message: notFound.message });
+        next(new NotFoundError());
       } else {
-        res.status(defaultError.status).send({ message: defaultError.message });
+        next(err);
       }
     });
 };
