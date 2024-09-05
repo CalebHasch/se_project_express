@@ -1,9 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { notFound } = require("./utils/error");
-const errorHandler = require("./middlewares/errorHandler");
 const { errors } = require("celebrate");
+const { notFound } = require("./utils/error");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+const errorHandler = require("./middlewares/errorHandler");
 
 const { PORT = 3001 } = process.env;
 
@@ -17,7 +18,10 @@ mongoose
 app.use(cors());
 app.use(express.json());
 
+app.use(requestLogger);
 app.use("/", require("./routes/index"));
+
+app.use(errorLogger);
 
 app.use((req, res) => {
   res.status(notFound.status).send({ message: notFound.message });
