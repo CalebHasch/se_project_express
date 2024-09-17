@@ -7,6 +7,16 @@ const { notFound } = require("./utils/error");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const errorHandler = require("./middlewares/errorHandler");
 
+const corsOptions = {
+  origin: [
+    "https://calebhaschwtwr.crabdance.com",
+    "https://calebhaschwtwr.crabdance.com",
+  ],
+  methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
+  credentials: true,
+  options: 204,
+};
+
 const { PORT = 3001 } = process.env;
 
 const app = express();
@@ -16,7 +26,7 @@ mongoose
   .then(() => console.log("connected to db"))
   .catch(console.error);
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use(requestLogger);
