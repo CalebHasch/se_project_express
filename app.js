@@ -10,7 +10,7 @@ const errorHandler = require("./middlewares/errorHandler");
 const corsOptions = {
   origin: [
     "https://calebhaschwtwr.crabdance.com",
-    "https://calebhaschwtwr.crabdance.com",
+    "https://www.calebhaschwtwr.crabdance.com",
   ],
   methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
   credentials: true,
