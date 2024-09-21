@@ -27,9 +27,7 @@ module.exports.createUser = (req, res, next) => {
           }
         });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {

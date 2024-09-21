@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
-const { notFound } = require("./utils/error");
+const NotFoundError = require("./utils/Errors/NotFoundError");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -38,11 +38,11 @@ app.get("/crash-test", () => {
 });
 app.use("/", require("./routes/index"));
 
-app.use(errorLogger);
-
-app.use((req, res) => {
-  res.status(notFound.status).send({ message: notFound.message });
+app.use((req, res, next) => {
+  next(new NotFoundError());
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 

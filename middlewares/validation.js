@@ -8,26 +8,24 @@ const validateURL = (value, helpers) => {
   return helpers.error("string.uri");
 };
 
-function clothingItemValidation(res, req, next) {
+function clothingItemValidation() {
   celebrate({
-    body: Joi.object()
-      .keys({
-        name: Joi.string().required().min(2).max(30).messages({
-          "string.min": 'The minimum length of the "name" field is 2',
-          "string.max": 'The maximum length of the "name" field is 30',
-          "string.empty": 'The "name" field must be filled in',
-        }),
-        imageUrl: Joi.string().required().custom(validateURL).messages({
-          "string.empty": 'The "imageUrl" field must be filled in',
-          "string.uri": 'the "imageUrl" field must be a valid url',
-        }),
-      })
-      .unknown(true),
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30).messages({
+        "string.min": 'The minimum length of the "name" field is 2',
+        "string.max": 'The maximum length of the "name" field is 30',
+        "string.empty": 'The "name" field must be filled in',
+      }),
+      imageUrl: Joi.string().required().custom(validateURL).messages({
+        "string.empty": 'The "imageUrl" field must be filled in',
+        "string.uri": 'the "imageUrl" field must be a valid url',
+      }),
+      weather: Joi.string().valid("hot", "warm", "cold").required(),
+    }),
   });
-  return next();
 }
 
-function userValidation(res, req, next) {
+function userValidation() {
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30).messages({
@@ -47,10 +45,24 @@ function userValidation(res, req, next) {
       }),
     }),
   });
-  return next();
 }
 
-function loginValidation(res, req, next) {
+function userUpdateValidation() {
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30).messages({
+        "string.min": 'The minimum length of the "name" field is 2',
+        "string.max": 'The maximum length of the "name" field is 30',
+      }),
+      avatar: Joi.string().custom(validateURL).messages({
+        "string.empty": 'The "avatar" field must be filled in',
+        "string.uri": 'the "avatar" field must be a valid url',
+      }),
+    }),
+  });
+}
+
+function loginValidation() {
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email().messages({
@@ -62,25 +74,24 @@ function loginValidation(res, req, next) {
       }),
     }),
   });
-  return next();
 }
 
-function idValidation(res, req, next) {
+function idValidation() {
   celebrate({
     params: Joi.object().keys({
-      _id: Joi.string().hex.length(24).messages({
+      itemId: Joi.string().hex().length(24).messages({
         "string.hex":
           'The "_id" field must only contain hexidecimal characters',
         "string.length": 'The "_id" field must be 24 characters exactly',
       }),
     }),
   });
-  return next();
 }
 
 module.exports = {
   clothingItemValidation,
   userValidation,
+  userUpdateValidation,
   loginValidation,
   idValidation,
 };

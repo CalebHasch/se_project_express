@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
-const { invalidLogin } = require("../utils/error");
 const { JWT_SECRET } = require("../utils/config");
+const InvalidLoginError = require("../utils/Errors/InvalidLoginError");
 
-const handleAuthError = (res) => {
-  res.status(invalidLogin.status).send({ message: "Authorization Error" });
+const handleAuthError = (req, res, next) => {
+  next(new InvalidLoginError());
 };
 
 module.exports = (req, res, next) => {
